@@ -1,26 +1,26 @@
 package WordNet.attempt1;
 
+import java.util.ArrayList;
 import java.util.TreeMap;
 
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.SET;
 
 public class WordNet {
   private final Digraph graph;
-  private final TreeMap<Integer, String> wordList;
+  private final TreeMap<Integer, String[]> wordList;
   private final SAP graphSap;
 
   public WordNet(String synsets, String hypernyms) {
     validateStringArgument(synsets);
     validateStringArgument(hypernyms);
 
-    wordList = new TreeMap<Integer, String>();
+    wordList = new TreeMap<Integer, String[]>();
 
     In synIn = new In(synsets);
     while (!synIn.isEmpty()) {
       String[] items = synIn.readLine().split(",");
-      wordList.put(Integer.parseInt(items[0]), items[1]);
+      wordList.put(Integer.parseInt(items[0]), items[1].split(" "));
     }
 
     graph = new Digraph(wordList.size());
@@ -44,25 +44,25 @@ public class WordNet {
   }
 
   public Iterable<String> nouns() {
-    return wordList.values();
+    ArrayList<String> nouns = new ArrayList<String>();
+    for (var values : wordList.values())
+      for (var value : values)
+        nouns.add(value);
+    return nouns;
   }
 
   public boolean isNoun(String word) {
-    validateStringArgument(word);
-    return wordList.containsValue(word);
+    return getKeysBy(word).iterator().hasNext();
   }
 
   public int distance(String nounA, String nounB) {
-    validateWord(nounA);
-    validateWord(nounB);
     return graphSap.length(getKeysBy(nounA), getKeysBy(nounB));
   }
 
   public String sap(String nounA, String nounB) {
-    validateWord(nounA);
-    validateWord(nounB);
     return wordList.get(
-        graphSap.ancestor(getKeysBy(nounA), getKeysBy(nounB)));
+        graphSap.ancestor(
+            getKeysBy(nounA), getKeysBy(nounB)))[0];
   }
 
   private void validateStringArgument(String string) {
@@ -70,18 +70,19 @@ public class WordNet {
       throw new IllegalArgumentException("argument is null");
   }
 
-  private void validateWord(String word) {
-    validateStringArgument(word);
-    if (!wordList.containsValue(word))
-      throw new IllegalArgumentException("word " + word + " is not a wordNet noun");
-  }
-
   private Iterable<Integer> getKeysBy(String word) {
-    SET<Integer> keys = new SET<Integer>();
-    for (var entry : wordList.entrySet()) {
-      if (entry.getValue().equals(word))
-        keys.add(entry.getKey());
-    }
+    validateStringArgument(word);
+
+    ArrayList<Integer> keys = new ArrayList<Integer>();
+    for (var entry : wordList.entrySet())
+      for (var value : entry.getValue())
+        if (value.equals(word)) {
+          keys.add(entry.getKey());
+          break;
+        }
+
+    if (keys.size() == 0)
+      throw new IllegalArgumentException("word " + word + " is not a wordNet noun");
     return keys;
   }
 
