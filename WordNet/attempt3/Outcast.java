@@ -1,3 +1,4 @@
+// Attempt3: get scores 100/100 without bouns points
 package WordNet.attempt3;
 
 import edu.princeton.cs.algs4.In;

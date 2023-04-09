@@ -1,3 +1,5 @@
+// Attempt3: get scores 100/100 without bouns points
+
 package WordNet.attempt3;
 
 import java.util.ArrayList;
