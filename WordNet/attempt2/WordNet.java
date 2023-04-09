@@ -1,20 +1,20 @@
 package WordNet.attempt2;
 
 import java.util.ArrayList;
-import java.util.TreeMap;
+import java.util.HashMap;
 
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
 
 public class WordNet {
-  private final TreeMap<Integer, String[]> wordList;
+  private final HashMap<Integer, String[]> wordList;
   private final SAP graphSap;
 
   public WordNet(String synsets, String hypernyms) {
     validateStringArgument(synsets);
     validateStringArgument(hypernyms);
 
-    wordList = new TreeMap<Integer, String[]>();
+    wordList = new HashMap<Integer, String[]>();
 
     In synIn = new In(synsets);
     while (!synIn.isEmpty()) {
@@ -65,9 +65,15 @@ public class WordNet {
   }
 
   public String sap(String nounA, String nounB) {
-    return wordList.get(
-        graphSap.ancestor(
-            getKeysBy(nounA), getKeysBy(nounB)))[0];
+    StringBuilder noun = new StringBuilder();
+    for (var n : wordList.get(graphSap.ancestor(getKeysBy(nounA), getKeysBy(nounB)))) {
+      if (noun.length() == 0) {
+        noun.append(n);
+        continue;
+      }
+      noun.append(" ").append(n);
+    }
+    return noun.toString();
   }
 
   private void validateStringArgument(String string) {

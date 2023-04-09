@@ -78,15 +78,10 @@ public class SAP {
     for (int x = 0; x < graph.V(); x++)
       if (dfsFromV.hasPathTo(x) && dfsFromW.hasPathTo(x)) {
         int newDist = dfsFromV.distTo(x) + dfsFromW.distTo(x);
-        if (dist < 0) {
+        if (newDist < dist || dist < 0) {
           dist = newDist;
           ancestor = x;
-          continue;
         }
-        if (newDist > dist)
-          break;
-        dist = newDist;
-        ancestor = x;
       }
 
     if (Integer.compare(Integer.MIN_VALUE, dist) == 0)
