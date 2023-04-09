@@ -7,7 +7,6 @@ import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
 
 public class WordNet {
-  private final Digraph graph;
   private final TreeMap<Integer, String[]> wordList;
   private final SAP graphSap;
 
@@ -23,15 +22,21 @@ public class WordNet {
       wordList.put(Integer.parseInt(items[0]), items[1].split(" "));
     }
 
-    graph = new Digraph(wordList.size());
+    Digraph graph = new Digraph(wordList.size());
 
     int count = 0;
     In hyperIn = new In(hypernyms);
     while (!hyperIn.isEmpty()) {
       String[] items = hyperIn.readLine().split(",");
       if (items.length > 1) {
-        for (int i = 1; i < items.length; i++)
-          graph.addEdge(Integer.parseInt(items[0]), Integer.parseInt(items[i]));
+        int v = Integer.parseInt(items[0]);
+        for (int i = 1; i < items.length; i++) {
+          int w = Integer.parseInt(items[i]);
+          if (v == w)
+            throw new IllegalArgumentException(
+                "The input to the constructor does not correspond to a DAG");
+          graph.addEdge(v, w);
+        }
       } else
         count++;
     }
@@ -81,11 +86,12 @@ public class WordNet {
           break;
         }
 
-    if (keys.size() == 0)
+    if (keys.isEmpty())
       throw new IllegalArgumentException("word " + word + " is not a wordNet noun");
     return keys;
   }
 
   public static void main(String[] args) {
+    System.out.println("No test here");
   }
 }

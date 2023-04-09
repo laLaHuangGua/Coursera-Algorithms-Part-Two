@@ -42,24 +42,20 @@ public class SAP {
   }
 
   private void validateVertex(int v) {
-    int V = graph.V();
-    if (v < 0 || v >= V)
-      throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (V - 1));
+    int size = graph.V();
+    if (v < 0 || v >= size)
+      throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (size - 1));
   }
 
   private void validateVertices(Iterable<Integer> vertices) {
     if (vertices == null)
       throw new IllegalArgumentException("argument is null");
 
-    int count = 0;
     for (Integer v : vertices) {
-      count++;
       if (v == null)
         throw new IllegalArgumentException("vertex is null");
       validateVertex(v);
     }
-    if (count == 0)
-      throw new IllegalArgumentException("zero vertices");
   }
 
   private int dfs(boolean flag, int v, int w) {
