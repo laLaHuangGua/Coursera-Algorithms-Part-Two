@@ -65,6 +65,8 @@ public class SAP {
   }
 
   private int dfs(boolean flag, Iterable<Integer> v, Iterable<Integer> w) {
+    if (!v.iterator().hasNext() || !w.iterator().hasNext())
+      return -1;
     var dfsFromV = new BreadthFirstDirectedPaths(graph, v);
     var dfsFromW = new BreadthFirstDirectedPaths(graph, w);
     return find(flag, dfsFromV, dfsFromW);

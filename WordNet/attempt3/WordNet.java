@@ -7,22 +7,35 @@ import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
 
 public class WordNet {
-  private final HashMap<Integer, String[]> wordList;
+  private final HashMap<Integer, String[]> idToWordsMap;
+  private final HashMap<String, ArrayList<Integer>> wordToIdsMap;
   private final SAP graphSap;
 
   public WordNet(String synsets, String hypernyms) {
     validateStringArgument(synsets);
     validateStringArgument(hypernyms);
 
-    wordList = new HashMap<Integer, String[]>();
+    idToWordsMap = new HashMap<Integer, String[]>();
+    wordToIdsMap = new HashMap<String, ArrayList<Integer>>();
 
     In synIn = new In(synsets);
     while (!synIn.isEmpty()) {
       String[] items = synIn.readLine().split(",");
-      wordList.put(Integer.parseInt(items[0]), items[1].split(" "));
+
+      String[] words = items[1].split(" ");
+      int id = Integer.parseInt(items[0]);
+
+      idToWordsMap.put(id, words);
+      for (var word : words) {
+        ArrayList<Integer> ids = wordToIdsMap.get(word);
+        if (ids == null)
+          ids = new ArrayList<Integer>();
+        ids.add(Integer.parseInt(items[0]));
+        wordToIdsMap.put(word, ids);
+      }
     }
 
-    Digraph graph = new Digraph(wordList.size());
+    Digraph graph = new Digraph(idToWordsMap.size());
 
     int count = 0;
     In hyperIn = new In(hypernyms);
@@ -49,24 +62,28 @@ public class WordNet {
   }
 
   public Iterable<String> nouns() {
-    ArrayList<String> nouns = new ArrayList<String>();
-    for (var values : wordList.values())
-      for (var value : values)
-        nouns.add(value);
-    return nouns;
+    return wordToIdsMap.keySet();
   }
 
   public boolean isNoun(String word) {
-    return getKeysBy(word).iterator().hasNext();
+    validateStringArgument(word);
+    return wordToIdsMap.containsKey(word);
   }
 
   public int distance(String nounA, String nounB) {
-    return graphSap.length(getKeysBy(nounA), getKeysBy(nounB));
+    validateWord(nounA);
+    validateWord(nounB);
+    return graphSap.length(wordToIdsMap.get(nounA), wordToIdsMap.get(nounB));
   }
 
   public String sap(String nounA, String nounB) {
+    validateWord(nounA);
+    validateWord(nounB);
+
     StringBuilder noun = new StringBuilder();
-    for (var n : wordList.get(graphSap.ancestor(getKeysBy(nounA), getKeysBy(nounB)))) {
+    int ancestor = graphSap.ancestor(wordToIdsMap.get(nounA), wordToIdsMap.get(nounB));
+
+    for (var n : idToWordsMap.get(ancestor)) {
       if (noun.length() == 0) {
         noun.append(n);
         continue;
@@ -81,20 +98,10 @@ public class WordNet {
       throw new IllegalArgumentException("argument is null");
   }
 
-  private Iterable<Integer> getKeysBy(String word) {
+  private void validateWord(String word) {
     validateStringArgument(word);
-
-    ArrayList<Integer> keys = new ArrayList<Integer>();
-    for (var entry : wordList.entrySet())
-      for (var value : entry.getValue())
-        if (value.equals(word)) {
-          keys.add(entry.getKey());
-          break;
-        }
-
-    if (keys.isEmpty())
-      throw new IllegalArgumentException("word " + word + " is not a wordNet noun");
-    return keys;
+    if (!isNoun(word))
+      throw new IllegalArgumentException("noun " + word + "is not a wordNet noun");
   }
 
   public static void main(String[] args) {
