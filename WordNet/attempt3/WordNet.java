@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.Topological;
 
 public class WordNet {
   private final HashMap<Integer, String[]> idToWordsMap;
@@ -43,16 +44,16 @@ public class WordNet {
       String[] items = hyperIn.readLine().split(",");
       if (items.length > 1) {
         int v = Integer.parseInt(items[0]);
-        for (int i = 1; i < items.length; i++) {
-          int w = Integer.parseInt(items[i]);
-          if (v == w)
-            throw new IllegalArgumentException(
-                "The input to the constructor does not correspond to a DAG");
-          graph.addEdge(v, w);
-        }
+        for (int i = 1; i < items.length; i++)
+          graph.addEdge(v, Integer.parseInt(items[i]));
       } else
         count++;
     }
+
+    Topological topo = new Topological(graph);
+    if (!topo.hasOrder())
+      throw new IllegalArgumentException(
+          "The input to the constructor does not correspond to a DAG");
 
     if (count < 1)
       throw new IllegalArgumentException(
