@@ -1,3 +1,5 @@
+// Attempt2: get scores 71/100
+
 package WordNet.attempt2;
 
 import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;

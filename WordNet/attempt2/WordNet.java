@@ -1,3 +1,4 @@
+// Attempt2: get scores 71/100
 package WordNet.attempt2;
 
 import java.util.ArrayList;
