@@ -1,3 +1,4 @@
+// Attempt1: get scores 46/100
 package WordNet.attempt1;
 
 import edu.princeton.cs.algs4.In;
